@@ -67,9 +67,12 @@ Buyverse is an e-commerce web application built using Node.js, Express.js, Graph
 
 | Method | Endpoint                  | Description                                  |
 |--------|---------------------------|----------------------------------------------|
-| POST   | /api/auth/register         | Register a new user                          |
-| POST   | /api/auth/login            | Login a user                                 |
-| POST   | /api/auth/reset-password   | Reset a user's password                      |
+| POST   | /api/v1/users/register         | Register a new user                          |
+| POST   | /api/v1/users/login            | Login a user                                 |
+| POST   | /api/v1/users/reset-password   | Reset a user's password                      |
+| POST   | /api/v1/users/forgot-password | Forget a user's password                     |
+| POST   | /api/v1/users/request-otp     | Request OTP for account verification      |
+| POST   | /api/v1/users/verify-otp   | Verify OTP recieved                          |
 | GET    | /api/products              | Get all products                             |
 | GET    | /api/products/:id          | Get a specific product                       |
 | POST   | /api/cart                  | Add a product to the cart                    |
