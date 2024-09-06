@@ -1,0 +1,478 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "API documentation for Buyverse Platform",
+    "version": "1.0.0",
+    "title": "Buyverse API Docs",
+    "contact": {
+      "email": "pandeyansal77@gmail.com"
+    }
+  },
+  "host": "localhost:3000",
+  "basePath": "/api/v1",
+  "tags": [
+    {
+      "name": "Users",
+      "description": "User management endpoints"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/users/register": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Register a new user",
+        "description": "Creates a new user account",
+        "operationId": "registerUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User object that needs to be added",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RegisterUser"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User registered successfully",
+            "schema": {
+              "$ref": "#/definitions/UserResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Login a user",
+        "description": "Authenticates a user and returns a JWT token",
+        "operationId": "loginUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User credentials",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginUser"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User logged in successfully",
+            "schema": {
+              "$ref": "#/definitions/LoginResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid credentials",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/users/forgot-password": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Forgot password",
+        "description": "Resets the user's password",
+        "operationId": "forgotPassword",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Email and new password",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ForgotPassword"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password reset successfully",
+            "schema": {
+              "$ref": "#/definitions/SuccessResponse"
+            }
+          },
+          "400": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/users/request-otp": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Request OTP",
+        "description": "Sends an OTP to the user's email",
+        "operationId": "requestOTP",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User's email",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RequestOTP"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OTP sent to your email",
+            "schema": {
+              "$ref": "#/definitions/SuccessResponse"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Error sending email",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/users/verify-otp": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Verify OTP",
+        "description": "Verifies the OTP entered by the user",
+        "operationId": "verifyOTP",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Email and OTP",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VerifyOTP"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OTP verified successfully",
+            "schema": {
+              "$ref": "#/definitions/SuccessResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid or expired OTP",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/users/reset-password": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Reset password",
+        "description": "Resets the user's password after OTP verification",
+        "operationId": "resetPassword",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Email and new password",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ResetPassword"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password reset successfully",
+            "schema": {
+              "$ref": "#/definitions/SuccessResponse"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "An error occurred",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "RegisterUser": {
+      "type": "object",
+      "required": [
+        "name",
+        "email",
+        "password"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "John Doe"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "john.doe@example.com"
+        },
+        "password": {
+          "type": "string",
+          "format": "password",
+          "example": "SecurePassword123!"
+        }
+      }
+    },
+    "LoginUser": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "john.doe@example.com"
+        },
+        "password": {
+          "type": "string",
+          "format": "password",
+          "example": "SecurePassword123!"
+        }
+      }
+    },
+    "ForgotPassword": {
+      "type": "object",
+      "required": [
+        "email",
+        "newPassword"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "john.doe@example.com"
+        },
+        "newPassword": {
+          "type": "string",
+          "format": "password",
+          "example": "NewSecurePassword123!"
+        }
+      }
+    },
+    "RequestOTP": {
+      "type": "object",
+      "required": [
+        "email"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "john.doe@example.com"
+        }
+      }
+    },
+    "VerifyOTP": {
+      "type": "object",
+      "required": [
+        "email",
+        "otp"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "john.doe@example.com"
+        },
+        "otp": {
+          "type": "string",
+          "example": "123456"
+        }
+      }
+    },
+    "ResetPassword": {
+      "type": "object",
+      "required": [
+        "email",
+        "newPassword"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "john.doe@example.com"
+        },
+        "newPassword": {
+          "type": "string",
+          "format": "password",
+          "example": "NewSecurePassword123!"
+        }
+      }
+    },
+    "UserResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "User registered successfully"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      }
+    },
+    "LoginResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "User logged in successfully!"
+        },
+        "token": {
+          "type": "string",
+          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      }
+    },
+    "SuccessResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "Operation completed successfully"
+        }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "An error occurred"
+        },
+        "error": {
+          "type": "string",
+          "example": "Detailed error message"
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "60c72b2f5f1b2c6d88f1a4f5"
+        },
+        "name": {
+          "type": "string",
+          "example": "John Doe"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "john.doe@example.com"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "JWT": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\""
+    }
+  }
+}
