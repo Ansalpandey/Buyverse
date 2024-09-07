@@ -1,6 +1,6 @@
 # Buyverse
 
-Buyverse is an e-commerce web application built using Node.js, Express.js, GraphQL and MongoDB. It features user authentication, a product catalog, a shopping cart, order management, payment gateway integration, and real-time notifications to provide an immersive shopping experience.
+Buyverse is an e-commerce web application built using Node.js, Express.js, and MongoDB. It features user authentication, a product catalog, a shopping cart, order management, payment gateway integration, and real-time notifications to provide an immersive shopping experience.
 
 ## Features
 
