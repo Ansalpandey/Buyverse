@@ -1,15 +1,21 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+
 const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, "Name is required"],
     },
+    role: {
+      type: String,
+      enum: ["Customer", "Seller", "Delivery Agent"],
+      default: "Customer",
+      required: [true, "Role is required"],
+    },
     email: {
       type: String,
       required: [true, "Email is required"],
-      unique: true,
     },
     password: {
       type: String,
@@ -23,9 +29,16 @@ const userSchema = new mongoose.Schema(
       type: Date,
       index: { expires: "15m" },
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
+
+// Create a compound unique index on email and role
+userSchema.index({ email: 1, role: 1 }, { unique: true });
 
 // Middleware to hash password before saving
 userSchema.pre("save", function (next) {
@@ -50,10 +63,7 @@ userSchema.pre("findOneAndUpdate", async function (next) {
     try {
       // Find the current user data
       const user = await this.model.findOne(this.getQuery());
-      const isSamePassword = await bcrypt.compare(
-        update.password,
-        user.password
-      );
+      const isSamePassword = await bcrypt.compare(update.password, user.password);
       if (!isSamePassword) {
         // Hash the new password if it's different
         const hashedPassword = await bcrypt.hash(update.password, 10);
@@ -69,6 +79,7 @@ userSchema.pre("findOneAndUpdate", async function (next) {
   next();
 });
 
+// Method to check if the provided password matches the stored hashed password
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
