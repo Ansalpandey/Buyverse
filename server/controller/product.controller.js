@@ -2,51 +2,52 @@ const Product = require("../model/product.model");
 const User = require("../model/user.model");
 const DeliveryAgent = require("../model/delivery.model");
 const mongoose = require("mongoose");
+const uploadImagesToS3 = require("../utils/imageupload");
 
-// Create a new product
 exports.createProduct = async (req, res) => {
   const { role } = req.body;
 
   if (role !== "Seller") {
     return res.status(403).json({ message: "Forbidden" });
   }
-  try {
-    const {
-      name,
-      price,
-      description,
-      countInStock,
-      category,
-      image,
-      seller,
-      rating,
-    } = req.body;
 
-    // Check for required fields
+  try {
+    const { name, price, description, countInStock, category, seller, rating } =
+      req.body;
+
     if (
       !name ||
       !price ||
       !description ||
       !countInStock ||
       !category ||
-      !image ||
       !seller ||
       !rating
     ) {
       return res.status(400).json({
         message:
-          "Name, price, description, stock, category, image, and seller are required",
+          "Name, price, description, stock, category, seller, and rating are required",
       });
     }
 
-    // Create a new product
+    // Check if images are provided
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        message: "At least one image is required",
+      });
+    }
+
+    // Upload images to S3 and get their URLs
+    const imageUrls = await uploadImagesToS3(req.files);
+
+    // Create a new product with image URLs
     const product = new Product({
       name,
       price,
       description,
       countInStock,
       category,
-      image,
+      images: imageUrls, // Store image URLs in an array
       seller,
       rating,
     });
@@ -63,7 +64,7 @@ exports.createProduct = async (req, res) => {
         description: product.description,
         stock: product.countInStock,
         category: product.category,
-        image: product.image,
+        images: product.images, // Return the image URLs
         seller: product.seller,
         rating: product.rating,
       },
@@ -246,17 +247,18 @@ exports.getPriceRangeProducts = async (req, res) => {
     }
 
     // Fetch products within the specified price range
-    const products = await Product.find({ price: { $gte: minPrice, $lte: maxPrice } });
+    const products = await Product.find({
+      price: { $gte: minPrice, $lte: maxPrice },
+    });
 
     // Return the products found
     res.status(200).json({ message: "Products found", products });
   } catch (error) {
     // Log and return any error that occurs
-    console.error('Error fetching products by price range:', error);
+    console.error("Error fetching products by price range:", error);
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // Get the delivery agent of a product
 exports.getDeliveryAgent = async (req, res) => {

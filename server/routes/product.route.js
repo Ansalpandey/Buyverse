@@ -12,9 +12,10 @@ const {
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth.middleware');
+const upload = require('../middleware/multer.middleware');
 
 // Create a new product
-router.post('/', createProduct);
+router.post('/', upload, createProduct);
 
 // Get all products
 router.get('/', getProducts);

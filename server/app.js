@@ -7,7 +7,6 @@ const limiter = require("./utils/ratelimit.util");
 const morgan = require("morgan");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./docs/swagger.json");
-require("./utils/messagequeue.util.js");
 //Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

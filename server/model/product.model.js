@@ -19,10 +19,10 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, "Category is required"],
     },
-    image: {
+    images: [{
       type: String,
       required: [true, "Image is required"],
-    },
+    }],
     countInStock: {
       type: Number,
       required: [true, "Stock is required"],
