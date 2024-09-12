@@ -25,7 +25,7 @@ Buyverse is an e-commerce web application built using Node.js, Express.js, and M
 - Stripe/PayPal for payment processing
 - Nodemailer for email notifications
 
-## Installation
+## Installation for Backend
 
 1. Clone the repository:
 
@@ -36,7 +36,7 @@ Buyverse is an e-commerce web application built using Node.js, Express.js, and M
 2. Install dependencies:
 
     ```bash
-    cd Buyverse
+    cd Buyverse/server
     npm install
     ```
 
