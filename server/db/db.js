@@ -6,7 +6,8 @@ dotenv.config();
 const connectDB = async () => {
   try {
     await mongoose.connect(
-      process.env.MONGO_URL_LOCAL, // Replace with process.env.MONGO_URL if using the production URL
+      // process.env.MONGO_URL_LOCAL,
+      process.env.MONGO_URL,
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,

@@ -26,10 +26,12 @@ connectDB();
 // Import Routes
 const userRoutes = require("./routes/user.route.js");
 const productRoutes = require("./routes/product.route.js");
+const deliveryRoutes = require("./routes/seller.route.js");
 
 // Routes
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/products", productRoutes);
+app.use("/api/v1/delivery", deliveryRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to Buyverse 👋👋👋");

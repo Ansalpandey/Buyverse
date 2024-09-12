@@ -27,6 +27,15 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Stock is required"],
     },
+    deliveryAgentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "DeliveryAgent",
+      required: [true, "Delivery Agent is required"],
+    },
+    countSold: {
+      type: Number,
+      default: 0,
+    },
     rating: {
       type: Number,
       required: [true, "Rating is required"],

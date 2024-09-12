@@ -16,6 +16,36 @@ exports.register = async (req, res) => {
         .json({ message: "Name, email, and password are required" });
     }
 
+    if (password.length < 8) {
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      return res.status(400).json({
+        message: "Password must contain at least one uppercase letter",
+      });
+    }
+
+    if (!/[a-z]/.test(password)) {
+      return res.status(400).json({
+        message: "Password must contain at least one lowercase letter",
+      });
+    }
+
+    if (!/[0-9]/.test(password)) {
+      return res
+        .status(400)
+        .json({ message: "Password must contain at least one digit" });
+    }
+
+    if (!/[!@#$%^&*]/.test(password)) {
+      return res.status(400).json({
+        message: "Password must contain at least one special character",
+      });
+    }
+
     // Default role if not provided
     const userRole = role || "Customer";
 
@@ -27,11 +57,9 @@ exports.register = async (req, res) => {
     // Check if the user already exists
     const existingUser = await User.findOne({ email, role });
     if (existingUser) {
-      return res
-        .status(400)
-        .json({
-          message: `User already exists with the email ${email} and role ${userRole}`,
-        });
+      return res.status(400).json({
+        message: `User already exists with the email ${email} and role ${userRole}`,
+      });
     }
 
     // Create and save the new user
@@ -53,6 +81,63 @@ exports.register = async (req, res) => {
         role: newUser.role,
         isVerified: newUser.isVerified,
       },
+    });
+
+    // Generate a 6-digit OTP
+    const otp = crypto.randomInt(100000, 999999).toString();
+
+    // Store the OTP in the user's document
+    newUser.resetOtp = otp;
+    newUser.otpExpires = Date.now() + 15 * 60 * 1000; // 15 minutes expiry
+    await newUser.save();
+
+    // Customize email based on role
+    const roleMessage =
+      newUser.role === "Seller"
+        ? "Please verify your email to start selling."
+        : newUser.role === "Delivery Agent"
+        ? "Please verify your email to start delivering."
+        : "Please verify your email to complete your registration.";
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: newUser.email,
+      subject: "Welcome to Buyverse! Please verify your email",
+      html: `
+        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+          <img src="cid:buyverse_logo" alt="Buyverse Logo" style="width: 50px; height: 50px; margin-right: 4px;" />
+          <h1 style="color: #000; font-weight: bold; margin: 0;">Buyverse</h1>
+        </div>
+        <h2 style="color: #000;">Your OTP: <strong>${otp}</strong></h2>
+        <p style="font-size: 16px;">This OTP is valid for the next <strong>15 minutes</strong>. ${roleMessage} If you did not request this, please ignore this email, and your account will remain secure.</p>
+      `,
+      attachments: [
+        {
+          filename: "buyverse_logo.png",
+          path: "./assets/buyverse_logo.png",
+          cid: "buyverse_logo",
+        },
+      ],
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log("Error sending email:", error);
+        return res.status(500).json({ message: "Error sending email" });
+      } else {
+        console.log("Email sent:", info.response);
+        return res.status(200).json({
+          message: "OTP sent to your email",
+        });
+      }
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -124,6 +209,42 @@ exports.login = async (req, res) => {
 // Forgot password
 exports.forgotPassword = async (req, res) => {
   const { email, newPassword } = req.body;
+
+  if (!email || !newPassword) {
+    return res
+      .status(400)
+      .json({ message: "Email and new password are required" });
+  }
+
+  if (newPassword.length < 8) {
+    return res
+      .status(400)
+      .json({ message: "Password must be at least 6 characters" });
+  }
+
+  if (!/[A-Z]/.test(newPassword)) {
+    return res
+      .status(400)
+      .json({ message: "Password must contain at least one uppercase letter" });
+  }
+
+  if (!/[a-z]/.test(newPassword)) {
+    return res
+      .status(400)
+      .json({ message: "Password must contain at least one lowercase letter" });
+  }
+
+  if (!/[0-9]/.test(newPassword)) {
+    return res
+      .status(400)
+      .json({ message: "Password must contain at least one digit" });
+  }
+
+  if (!/[!@#$%^&*]/.test(newPassword)) {
+    return res.status(400).json({
+      message: "Password must contain at least one special character",
+    });
+  }
 
   try {
     const user = await User.findOne({ email });
@@ -206,59 +327,47 @@ exports.verifyOTP = async (req, res) => {
   const { email, otp } = req.body;
 
   try {
-    // Find the user by email
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Check if the OTP is correct and has not expired
     if (user.resetOtp !== otp || user.otpExpires < Date.now()) {
       return res.status(400).json({ message: "Invalid or expired OTP" });
     }
 
-    // Role-based verification (if needed)
-    if (user.role === "Customer") {
-      // Specific logic for Customer role (if any)
-      console.log("Verifying Customer role...");
-    } else if (user.role === "Seller") {
-      // Specific logic for Seller role (if any)
-      console.log("Verifying Seller role...");
-    } else if (user.role === "Delivery Agent") {
-      // Specific logic for Delivery Agent role (if any)
-      console.log("Verifying Delivery Agent role...");
+    let roleMessage;
+
+    switch (user.role) {
+      case "Customer":
+        roleMessage = "Customer OTP verified successfully.";
+        console.log("Customer OTP verified.");
+        break;
+
+      case "Seller":
+        roleMessage = "Seller OTP verified successfully.";
+        console.log("Seller OTP verified.");
+        break;
+
+      case "Delivery Agent":
+        roleMessage = "Delivery Agent OTP verified successfully.";
+        console.log("Delivery Agent OTP verified.");
+        break;
+
+      default:
+        return res.status(400).json({ message: "Invalid user role" });
     }
 
-    // Set the isVerified flag to true
     user.isVerified = true;
-    user.resetOtp = undefined; // Clear the OTP
-    user.otpExpires = undefined; // Clear OTP expiry time
+    user.resetOtp = undefined;
+    user.otpExpires = undefined;
     await user.save();
 
     res.status(200).json({
-      message: "OTP verified successfully, user is now verified",
+      message: roleMessage,
       isVerified: true,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
-  }
-};
-
-// Reset password
-exports.resetPassword = async (req, res) => {
-  const { email, newPassword } = req.body;
-
-  try {
-    User.findOne({ email }).then((user) => {
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      // Update the user's password
-      user.password = newPassword;
-      user.save();
-      return res.status(200).json({ message: "Password reset successfully" });
-    });
-  } catch (error) {
-    return res.status(500).json({ message: "An error occurred", error });
   }
 };
