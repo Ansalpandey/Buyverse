@@ -67,7 +67,7 @@ Buyverse is an e-commerce web application built using Node.js, Express.js, and M
 Install dependencies:
 
     ```bash
-    cd Buyverse/client
+    cd Buyverse/client/buyverse
     npm install
     ```
 
