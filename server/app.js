@@ -27,7 +27,7 @@ connectDB();
 // Import Routes
 const userRoutes = require("./routes/user.route.js");
 const productRoutes = require("./routes/product.route.js");
-const deliveryRoutes = require("./routes/seller.route.js");
+const deliveryRoutes = require("./routes/delivery.route.js");
 const sellerRoutes = require("./routes/seller.route.js");
 
 // Routes
@@ -35,6 +35,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/delivery", deliveryRoutes);
 app.use("/api/v1/sellers", sellerRoutes);
+app.use("/api/v1/delivery", deliveryRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);

@@ -37,9 +37,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Create a compound unique index on email and role
-userSchema.index({ email: 1, role: 1 }, { unique: true });
-
 // Middleware to hash password before saving
 userSchema.pre("save", function (next) {
   const user = this;

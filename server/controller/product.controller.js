@@ -1,6 +1,5 @@
 const Product = require("../model/product.model");
-const User = require("../model/user.model");
-const DeliveryAgent = require("../model/delivery.model");
+const Seller = require("../model/seller.model");
 const mongoose = require("mongoose");
 
 // Get all products
@@ -46,7 +45,7 @@ exports.getSellerProducts = async (req, res) => {
     console.log(`Fetching products for seller with ID: ${id}`);
 
     // Check if the seller exists in the database
-    const seller = await User.findById(id);
+    const seller = await Seller.findById(id);
 
     if (!seller) {
       console.log(`Seller with ID: ${id} not found`);

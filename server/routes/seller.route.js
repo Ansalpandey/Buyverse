@@ -3,6 +3,8 @@ const {
   getTotalProductsInStock,
   getTotalProductsSold,
   createProduct,
+  registerSeller,
+  loginSeller,
   updateStock,
   updateRating,
   getStock,
@@ -15,6 +17,10 @@ const upload = require('../middleware/multer.middleware');
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth.middleware');
+
+router.post('/register-seller', registerSeller);
+
+router.post('/login-seller', loginSeller);
 
 router.get('/delivery-agents',auth, (req, res) => {
   getAllDeliveryAgents(req, res);

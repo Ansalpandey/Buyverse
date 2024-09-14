@@ -1,8 +1,147 @@
 const Product = require("../model/product.model");
 const uploadImagesToS3 = require("../utils/imageupload");
 const DeliveryAgent = require("../model/delivery.model");
-const User = require("../model/user.model");
+const Seller = require("../model/seller.model");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const sendRegistrationOTP = require("../utils/sendotp");
+
+// Register Seller
+exports.registerSeller = async (req, res) => {
+  try {
+    const { name, email, password, address, phone } = req.body;
+
+    // Check for required fields
+    if (!name || !email || !password || !address || !phone) {
+      return res
+        .status(400)
+        .json({
+          message:
+            "Name, email, password, address and phone number is required",
+        });
+    }
+
+    // Check if seller already exists
+    const existingSeller = await Seller.findOne({ email });
+    if (existingSeller) {
+      return res
+        .status(400)
+        .json({ message: "Seller already exists with the provided email" });
+    }
+
+    const newSeller = new Seller({
+      name,
+      email,
+      password,
+      address,
+      phone,
+      role: "Seller",
+      isVerified: false,
+    });
+
+    // Save seller and send OTP
+    await newSeller.save();
+    await sendRegistrationOTP(newSeller, res, "Seller");
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Login Seller
+exports.loginSeller = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Check for required fields
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
+    }
+
+    // Find seller by email and role
+    const seller = await Seller.findOne({ email });
+
+    if (!seller) {
+      return res.status(400).json({ message: "Seller not found" });
+    }
+
+    // Check password
+    const isMatch = await seller.isPasswordCorrect(password, seller.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: seller._id, email: seller.email, role: seller.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "15d" }
+    );
+
+    res.status(200).json({
+      message: "Seller logged in successfully",
+      token,
+      user: {
+        id: seller._id,
+        name: seller.name,
+        email: seller.email,
+        role: seller.role,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Update Seller Profile
+exports.updateSellerProfile = async (req, res) => {
+  try {
+    const { name, email, password, address, phone } = req.body;
+
+    // Check for required fields
+    if (!name || !email || !password || !address || !phone) {
+      return res
+        .status(400)
+        .json({
+          message:
+            "Name, email, password, address and phone number is required",
+        });
+    }
+
+    // Find seller by id
+    const seller = await Seller.findById(req.user.id);
+
+    if (!seller) {
+      return res.status(404).json({ message: "Seller not found" });
+    }
+
+    // Check password
+    const isMatch = await seller.isPasswordCorrect(password, seller.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get Seller Profile
+
+exports.getSellerProfile = async (req, res) => {
+  try {
+    const seller = await Seller.findById(req.user.id).select("-password");
+
+    if (!seller) {
+      return res.status(404).json({ message: "Seller not found" });
+    }
+
+    res.status(200).json({ seller });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Get Total Products in Stock
 exports.getTotalProductsInStock = async (req, res) => {
   try {
@@ -342,6 +481,40 @@ exports.deleteProduct = async (req, res) => {
     await product.remove();
 
     res.status(200).json({ message: "Product deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Verify OTP
+exports.verifyOTP = async (req, res) => {
+  const { email, otp } = req.body; // Ensure role is passed in the request body
+
+  try {
+    // Find the user by email and role
+    const seller = await Seller.findOne({ email });
+    if (!seller) {
+      return res
+        .status(404)
+        .json({ message: "Seller not found" });
+    }
+
+    // Check if OTP matches and is not expired
+    if (seller.resetOtp !== otp || seller.otpExpires < Date.now()) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    // Mark user as verified and clear OTP fields
+    seller.isVerified = true;
+    seller.resetOtp = undefined;
+    seller.otpExpires = undefined;
+    await seller.save();
+
+    // Return success response
+    res.status(200).json({
+      message: "Seller OTP verified successfully",
+      isVerified: true,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
