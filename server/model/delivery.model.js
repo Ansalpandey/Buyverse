@@ -5,27 +5,26 @@ const deliverySchema = new mongoose.Schema({
     type: String,
     required: [true, 'Name is required']
   },
-  price: {
-    type: Number,
-    required: [true, 'Price is required']
-  },
-  description: {
+  email: {
     type: String,
-    required: [true, 'Description is required']
+    required: [true, 'Email is required']
   },
-  category: {
+  password: {
     type: String,
-    required: [true, 'Category is required']
+    required: [true, 'Password is required']
   },
-  image: {
+  phone: {
     type: String,
-    required: [true, 'Image is required']
+    required: [true, 'Phone is required']
   },
-  seller: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Seller',
-    required: [true, 'Seller is required']
-  }
+  address: {
+    type: String,
+    required: [true, 'Address is required']
+  },
+  zone: {
+    type: String,
+    required: [true, 'Zone is required']
+  },
 }, { timestamps: true });
 const DeliveryAgent = mongoose.model('DeliveryAgent', deliverySchema);
 

@@ -12,7 +12,16 @@ const sellerSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Password is required']
-  }
+  },
+  phone: {
+    type: String,
+    required: [true, 'Phone is required']
+  },
+  address: {
+    type: String,
+    required: [true, 'Address is required']
+  },
+
 }, { timestamps: true });
 
 const Seller = mongoose.model('Seller', sellerSchema);

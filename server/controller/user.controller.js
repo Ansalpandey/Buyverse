@@ -1,4 +1,6 @@
 const User = require("../model/user.model");
+const Seller = require("../model/seller.model");
+const DeliveryAgent = require("../model/delivery.model");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -71,6 +73,35 @@ exports.register = async (req, res) => {
       isVerified: false,
     });
     await newUser.save();
+
+    //if user is a seller, create a new seller document
+    if (userRole === "Seller") {
+      const { name, email } = newUser;
+      const {address, phone} = req.body;
+      const newSeller = new Seller({
+        user: newUser._id,
+        name,
+        email,
+        address,
+        phone,
+      });
+      await newSeller.save();
+    }
+
+    //if user is a delivery agent, create a new delivery agent document
+    if (userRole === "Delivery Agent") {
+      const { name, email } = newUser;
+      const {address, phone, zone} = req.body;
+      const newDeliveryAgent = new DeliveryAgent({
+        user: newUser._id,
+        name,
+        email,
+        address,
+        phone,
+        zone,
+      });
+      await newDeliveryAgent.save();
+    }
 
     res.status(201).json({
       message: "User registered successfully. Please check your email for OTP.",

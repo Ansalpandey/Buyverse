@@ -7,17 +7,21 @@ const {
   updateRating,
   getStock,
   getDeliveryAgent,
-  getAllDeliveryAgents,
   assignDeliveryAgent,
   updateProduct,
   deleteProduct
 } = require('../controller/seller.controller');
-
+const upload = require('../middleware/multer.middleware');
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth.middleware');
 
-router.get('/delivery-agents', (req, res) => {
+router.get('/delivery-agents',auth, (req, res) => {
   getAllDeliveryAgents(req, res);
+});
+
+router.post('/product',auth, upload, (req, res) => {
+  createProduct(req, res);
 });
 
 module.exports = router;

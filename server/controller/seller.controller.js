@@ -38,16 +38,20 @@ exports.getTotalProductsSold = async (req, res) => {
 };
 
 exports.createProduct = async (req, res) => {
-  const { role } = req.body;
-
-  if (role !== "Seller") {
-    return res.status(403).json({ message: "Forbidden" });
-  }
-
   try {
-    const { name, price, description, countInStock, category, seller, rating } =
-      req.body;
-
+    const {
+      role,
+      name,
+      price,
+      description,
+      countInStock,
+      category,
+      seller,
+      rating,
+    } = req.body;
+    if (role !== "Seller") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
     if (
       !name ||
       !price ||
@@ -95,7 +99,7 @@ exports.createProduct = async (req, res) => {
         name: product.name,
         price: product.price,
         description: product.description,
-        stock: product.countInStock,
+        countInStock: product.countInStock,
         category: product.category,
         images: product.images, // Return the image URLs
         seller: product.seller,
@@ -189,7 +193,6 @@ exports.getStock = async (req, res) => {
   }
 };
 
-
 // Get the delivery agent of a product
 exports.getDeliveryAgent = async (req, res) => {
   try {
@@ -226,7 +229,7 @@ exports.getAllDeliveryAgents = async (req, res) => {
     }
 
     // Return the list of delivery agents
-    res.status(200).json({message: "Delivery Agents found", deliveryAgents});
+    res.status(200).json({ message: "Delivery Agents found", deliveryAgents });
   } catch (error) {
     // Handle any errors during the operation
     res.status(500).json({ message: error.message });

@@ -30,7 +30,6 @@ const productSchema = new mongoose.Schema(
     deliveryAgentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "DeliveryAgent",
-      required: [true, "Delivery Agent is required"],
     },
     countSold: {
       type: Number,
