@@ -13,12 +13,9 @@ exports.registerSeller = async (req, res) => {
 
     // Check for required fields
     if (!name || !email || !password || !address || !phone) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Name, email, password, address and phone number is required",
-        });
+      return res.status(400).json({
+        message: "Name, email, password, address and phone number is required",
+      });
     }
 
     // Check if seller already exists
@@ -101,12 +98,9 @@ exports.updateSellerProfile = async (req, res) => {
 
     // Check for required fields
     if (!name || !email || !password || !address || !phone) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Name, email, password, address and phone number is required",
-        });
+      return res.status(400).json({
+        message: "Name, email, password, address and phone number is required",
+      });
     }
 
     // Find seller by id
@@ -154,23 +148,6 @@ exports.getTotalProductsInStock = async (req, res) => {
     });
 
     res.status(200).json({ totalStock });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Get Total Products Sold
-exports.getTotalProductsSold = async (req, res) => {
-  try {
-    const products = await Product.find();
-
-    let totalSold = 0;
-
-    products.forEach((product) => {
-      totalSold += product.countSold;
-    });
-
-    res.status(200).json({ totalSold });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -276,35 +253,6 @@ exports.updateStock = async (req, res) => {
     await product.save();
 
     res.status(200).json({ message: "Stock updated successfully" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Update the rating of a product
-exports.updateRating = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { rating } = req.body;
-
-    // Check if the id is valid
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid product id" });
-    }
-
-    const product = await Product.findById(id);
-
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
-    // Update the rating
-    product.rating = rating;
-
-    // Save the updated product
-    await product.save();
-
-    res.status(200).json({ message: "Rating updated successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -494,9 +442,7 @@ exports.verifyOTP = async (req, res) => {
     // Find the user by email and role
     const seller = await Seller.findOne({ email });
     if (!seller) {
-      return res
-        .status(404)
-        .json({ message: "Seller not found" });
+      return res.status(404).json({ message: "Seller not found" });
     }
 
     // Check if OTP matches and is not expired

@@ -1,5 +1,5 @@
-const DeliveryAgent = require('../model/delivery.model.js');
-const mongoose = require('mongoose');
+const DeliveryAgent = require("../model/delivery.model.js");
+const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const sendRegistrationOTP = require("../utils/sendotp");
 
@@ -10,12 +10,10 @@ exports.registerDeliveryAgent = async (req, res) => {
 
     // Check for required fields
     if (!name || !email || !password || !address || !phone || !zone) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Name, email, password, address, zone and phone number is required",
-        });
+      return res.status(400).json({
+        message:
+          "Name, email, password, address, zone and phone number is required",
+      });
     }
 
     // Check if seller already exists
@@ -23,7 +21,9 @@ exports.registerDeliveryAgent = async (req, res) => {
     if (existingDeliveryAgent) {
       return res
         .status(400)
-        .json({ message: "Delivery Agent already exists with the provided email" });
+        .json({
+          message: "Delivery Agent already exists with the provided email",
+        });
     }
 
     const newDeliveryAgent = new DeliveryAgent({
@@ -34,7 +34,7 @@ exports.registerDeliveryAgent = async (req, res) => {
       phone,
       role: "Delivery Agent",
       isVerified: false,
-      zone: zone
+      zone: zone,
     });
 
     // Save seller and send OTP
@@ -65,14 +65,21 @@ exports.loginDeliveryAgent = async (req, res) => {
     }
 
     // Check password
-    const isMatch = await deliveryAgent.isPasswordCorrect(password, deliveryAgent.password);
+    const isMatch = await deliveryAgent.isPasswordCorrect(
+      password,
+      deliveryAgent.password
+    );
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: deliveryAgent._id, email: deliveryAgent.email, role: deliveryAgent.role },
+      {
+        id: deliveryAgent._id,
+        email: deliveryAgent.email,
+        role: deliveryAgent.role,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "15d" }
     );
@@ -92,7 +99,6 @@ exports.loginDeliveryAgent = async (req, res) => {
   }
 };
 
-
 // Verify OTP
 exports.verifyOTP = async (req, res) => {
   const { email, otp } = req.body; // Ensure role is passed in the request body
@@ -101,13 +107,14 @@ exports.verifyOTP = async (req, res) => {
     // Find the user by email and role
     const deliveryAgent = await DeliveryAgent.findOne({ email });
     if (!deliveryAgent) {
-      return res
-        .status(404)
-        .json({ message: "Seller not found" });
+      return res.status(404).json({ message: "Seller not found" });
     }
 
     // Check if OTP matches and is not expired
-    if (deliveryAgent.resetOtp !== otp || deliveryAgent.otpExpires < Date.now()) {
+    if (
+      deliveryAgent.resetOtp !== otp ||
+      deliveryAgent.otpExpires < Date.now()
+    ) {
       return res.status(400).json({ message: "Invalid or expired OTP" });
     }
 

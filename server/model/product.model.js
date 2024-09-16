@@ -19,10 +19,12 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, "Category is required"],
     },
-    images: [{
-      type: String,
-      required: [true, "Image is required"],
-    }],
+    images: [
+      {
+        type: String,
+        required: [true, "Image is required"],
+      },
+    ],
     countInStock: {
       type: Number,
       required: [true, "Stock is required"],
@@ -43,7 +45,7 @@ const productSchema = new mongoose.Schema(
     },
     seller: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Seller",
       required: [true, "Seller is required"],
     },
   },

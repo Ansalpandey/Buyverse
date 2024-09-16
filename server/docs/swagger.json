@@ -1,21 +1,15 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "API documentation for Buyverse Platform",
+    "description": "API documentation for the Buyverse Platform",
     "version": "1.0.0",
-    "title": "Buyverse API Docs",
+    "title": "Buyverse API",
     "contact": {
-      "email": "pandeyansal77@gmail.com"
+      "email": "support@buyverse.com"
     }
   },
   "host": "localhost:3000",
-  "basePath": "/api/v1",
-  "tags": [
-    {
-      "name": "Users",
-      "description": "User management endpoints"
-    }
-  ],
+  "basePath": "/api",
   "schemes": [
     "http"
   ],
@@ -26,7 +20,7 @@
           "Users"
         ],
         "summary": "Register a new user",
-        "description": "Creates a new user account",
+        "description": "Endpoint to register a new user in the system.",
         "operationId": "registerUser",
         "consumes": [
           "application/json"
@@ -38,7 +32,7 @@
           {
             "in": "body",
             "name": "body",
-            "description": "User object that needs to be added",
+            "description": "User registration data",
             "required": true,
             "schema": {
               "$ref": "#/definitions/RegisterUser"
@@ -46,14 +40,14 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "User registered successfully",
             "schema": {
               "$ref": "#/definitions/UserResponse"
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Invalid input",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
@@ -66,8 +60,8 @@
         "tags": [
           "Users"
         ],
-        "summary": "Login a user",
-        "description": "Authenticates a user and returns a JWT token",
+        "summary": "User login",
+        "description": "Endpoint for user login.",
         "operationId": "loginUser",
         "consumes": [
           "application/json"
@@ -79,7 +73,7 @@
           {
             "in": "body",
             "name": "body",
-            "description": "User credentials",
+            "description": "User login credentials",
             "required": true,
             "schema": {
               "$ref": "#/definitions/LoginUser"
@@ -88,7 +82,7 @@
         ],
         "responses": {
           "200": {
-            "description": "User logged in successfully",
+            "description": "Login successful",
             "schema": {
               "$ref": "#/definitions/LoginResponse"
             }
@@ -108,7 +102,7 @@
           "Users"
         ],
         "summary": "Forgot password",
-        "description": "Resets the user's password",
+        "description": "Endpoint to initiate a password reset.",
         "operationId": "forgotPassword",
         "consumes": [
           "application/json"
@@ -120,7 +114,7 @@
           {
             "in": "body",
             "name": "body",
-            "description": "Email and new password",
+            "description": "User email for password reset",
             "required": true,
             "schema": {
               "$ref": "#/definitions/ForgotPassword"
@@ -129,13 +123,13 @@
         ],
         "responses": {
           "200": {
-            "description": "Password reset successfully",
+            "description": "Password reset email sent",
             "schema": {
               "$ref": "#/definitions/SuccessResponse"
             }
           },
           "400": {
-            "description": "User not found",
+            "description": "Invalid email",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
@@ -149,7 +143,7 @@
           "Users"
         ],
         "summary": "Request OTP",
-        "description": "Sends an OTP to the user's email",
+        "description": "Endpoint to request an OTP for operations like password reset.",
         "operationId": "requestOTP",
         "consumes": [
           "application/json"
@@ -161,7 +155,7 @@
           {
             "in": "body",
             "name": "body",
-            "description": "User's email",
+            "description": "User email to send OTP",
             "required": true,
             "schema": {
               "$ref": "#/definitions/RequestOTP"
@@ -170,19 +164,13 @@
         ],
         "responses": {
           "200": {
-            "description": "OTP sent to your email",
+            "description": "OTP sent successfully",
             "schema": {
               "$ref": "#/definitions/SuccessResponse"
             }
           },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          },
-          "500": {
-            "description": "Error sending email",
+          "400": {
+            "description": "Invalid email",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
@@ -196,7 +184,7 @@
           "Users"
         ],
         "summary": "Verify OTP",
-        "description": "Verifies the OTP entered by the user",
+        "description": "Endpoint to verify OTP received by the user.",
         "operationId": "verifyOTP",
         "consumes": [
           "application/json"
@@ -208,7 +196,7 @@
           {
             "in": "body",
             "name": "body",
-            "description": "Email and OTP",
+            "description": "OTP verification data",
             "required": true,
             "schema": {
               "$ref": "#/definitions/VerifyOTP"
@@ -227,12 +215,6 @@
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
           }
         }
       }
@@ -243,7 +225,7 @@
           "Users"
         ],
         "summary": "Reset password",
-        "description": "Resets the user's password after OTP verification",
+        "description": "Endpoint to reset the user's password after OTP verification.",
         "operationId": "resetPassword",
         "consumes": [
           "application/json"
@@ -255,7 +237,7 @@
           {
             "in": "body",
             "name": "body",
-            "description": "Email and new password",
+            "description": "New password data",
             "required": true,
             "schema": {
               "$ref": "#/definitions/ResetPassword"
@@ -269,14 +251,351 @@
               "$ref": "#/definitions/SuccessResponse"
             }
           },
-          "404": {
-            "description": "User not found",
+          "400": {
+            "description": "Invalid input",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Get all products",
+        "description": "Endpoint to retrieve all products.",
+        "operationId": "getProducts",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Product"
+              }
+            }
           },
-          "500": {
-            "description": "An error occurred",
+          "400": {
+            "description": "Error occurred",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Get a single product",
+        "description": "Endpoint to retrieve a single product by ID.",
+        "operationId": "getProduct",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Product ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product details",
+            "schema": {
+              "$ref": "#/definitions/Product"
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/products/category/{category}": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Get products by category",
+        "description": "Endpoint to retrieve products by category.",
+        "operationId": "getCategoryProducts",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Product category"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products in the category",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Product"
+              }
+            }
+          },
+          "404": {
+            "description": "No products found in this category",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/products/price/{min}/{max}": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Get products within a price range",
+        "description": "Endpoint to retrieve products within a specific price range.",
+        "operationId": "getPriceRangeProducts",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "min",
+            "in": "path",
+            "required": true,
+            "type": "number",
+            "description": "Minimum price"
+          },
+          {
+            "name": "max",
+            "in": "path",
+            "required": true,
+            "type": "number",
+            "description": "Maximum price"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products within the price range",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Product"
+              }
+            }
+          },
+          "404": {
+            "description": "No products found within this price range",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/products/seller/{id}": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Get products by seller",
+        "description": "Endpoint to retrieve products by a specific seller.",
+        "operationId": "getSellerProducts",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Seller ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products by the seller",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Product"
+              }
+            }
+          },
+          "404": {
+            "description": "Seller not found or no products found for this seller",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/delivery-agents": {
+      "get": {
+        "tags": [
+          "Delivery Agents"
+        ],
+        "summary": "Get all delivery agents",
+        "description": "Endpoint to retrieve all registered delivery agents.",
+        "operationId": "getAllDeliveryAgents",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of delivery agents",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/DeliveryAgent"
+              }
+            }
+          },
+          "404": {
+            "description": "No delivery agents found",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/delivery-agents/register": {
+      "post": {
+        "tags": [
+          "Delivery Agents"
+        ],
+        "summary": "Register a delivery agent",
+        "description": "Endpoint to register a new delivery agent.",
+        "operationId": "registerDeliveryAgent",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Delivery agent registration data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RegisterDeliveryAgent"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delivery agent registered successfully",
+            "schema": {
+              "$ref": "#/definitions/DeliveryAgentResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/delivery-agents/login": {
+      "post": {
+        "tags": [
+          "Delivery Agents"
+        ],
+        "summary": "Delivery agent login",
+        "description": "Endpoint for delivery agent login.",
+        "operationId": "loginDeliveryAgent",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Delivery agent login credentials",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginDeliveryAgent"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "schema": {
+              "$ref": "#/definitions/LoginResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid credentials",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/delivery-agents/verify": {
+      "post": {
+        "tags": [
+          "Delivery Agents"
+        ],
+        "summary": "Verify delivery agent OTP",
+        "description": "Endpoint to verify OTP for delivery agent operations.",
+        "operationId": "verifyDeliveryAgentOTP",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "OTP verification data for delivery agent",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VerifyOTP"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OTP verified successfully",
+            "schema": {
+              "$ref": "#/definitions/SuccessResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid or expired OTP",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
@@ -332,19 +651,13 @@
     "ForgotPassword": {
       "type": "object",
       "required": [
-        "email",
-        "newPassword"
+        "email"
       ],
       "properties": {
         "email": {
           "type": "string",
           "format": "email",
           "example": "john.doe@example.com"
-        },
-        "newPassword": {
-          "type": "string",
-          "format": "password",
-          "example": "NewSecurePassword123!"
         }
       }
     },
@@ -465,14 +778,122 @@
           "example": "john.doe@example.com"
         }
       }
-    }
-  },
-  "securityDefinitions": {
-    "JWT": {
-      "type": "apiKey",
-      "name": "Authorization",
-      "in": "header",
-      "description": "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\""
+    },
+    "Product": {
+      "type": "object",
+      "required": [
+        "name",
+        "price",
+        "description",
+        "category",
+        "seller"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "prod123"
+        },
+        "name": {
+          "type": "string",
+          "example": "Gadget Pro"
+        },
+        "price": {
+          "type": "number",
+          "format": "double",
+          "example": 299.99
+        },
+        "description": {
+          "type": "string",
+          "example": "Latest model of the Gadget Pro with enhanced features."
+        },
+        "category": {
+          "type": "string",
+          "example": "Electronics"
+        },
+        "seller": {
+          "type": "string",
+          "example": "seller123"
+        },
+        "stock": {
+          "type": "integer",
+          "example": 150
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": "http://example.com/image1.jpg"
+          }
+        }
+      }
+    },
+    "DeliveryAgent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "agent123"
+        },
+        "name": {
+          "type": "string",
+          "example": "Jane Doe"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "jane.doe@example.com"
+        },
+        "phone": {
+          "type": "string",
+          "example": "+1234567890"
+        },
+        "status": {
+          "type": "string",
+          "example": "active"
+        }
+      }
+    },
+    "RegisterDeliveryAgent": {
+      "type": "object",
+      "required": [
+        "name",
+        "email",
+        "phone"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Jane Doe"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "jane.doe@example.com"
+        },
+        "phone": {
+          "type": "string",
+          "example": "+1234567890"
+        }
+      }
+    },
+    "LoginDeliveryAgent": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "jane.doe@example.com"
+        },
+        "password": {
+          "type": "string",
+          "format": "password",
+          "example": "SecurePassword123!"
+        }
+      }
     }
   }
 }
